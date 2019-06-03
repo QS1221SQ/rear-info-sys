@@ -1,0 +1,66 @@
+# 服务器配置
+server:
+  port: 8081
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+    io-threads: 4
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+    worker-threads: 20
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    buffer-size: 1024
+    # 是否分配的直接内存
+    direct-buffers: true
+
+# spring 配置
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+  servlet:
+    multipart:
+      max-file-size: 256MB
+      max-request-size: 1024MB
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/item_bank?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&tinyInt1isBit=false&serverTimezone=GMT%2B8
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      filters: stat,wall,config
+      max-active: 100
+      initial-size: 1
+      max-wait: 60000
+      min-idle: 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 'x'
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 50
+      max-pool-prepared-statement-per-connection-size: 20
+
+# 配置日志地址
+logging:
+  config: classpath:log/logback_dev.xml
+
+# mybatis 配置
+mybatis:
+  mapper-locations: classpath:com/erichary/rearinfosys/dao/mapping/**/*.xml
+  type-aliases-package: com.erichary.pojo.entity.**
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 个性化配置
+my-config:
+  # druid 数据连接池监控配置
+  druid:
+    allow: 127.0.0.1
+    deny:
+    resetEnable: true
+    loginUsername: admin
+    loginPassword: admin
